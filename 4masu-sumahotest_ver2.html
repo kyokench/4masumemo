@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>４マスメモ</title>
+
+
+
+<!-- ❶ jsPDF 本体（legacy 版なら window.jsPDF を出してくれる） -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.legacy.min.js"></script>
+
+<!-- ❷ 旧 API を使うフォント JS　← jsPDF 本体より後！ defer も付けない -->
+<script src="data/jspdf-font-noto.js"></script>
+
+<!-- ❸ autoTable（本体がいるのでここで OK） -->
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.28/dist/jspdf.plugin.autotable.min.js"></script>
+
+<style>
+/* ■ 表（2×2）専用スタイル ●*/
+table.memo{
+  width:100%;max-width:1200px;border-collapse:collapse;margin:24px auto;
+}
+.memo th,.memo td{border:1px solid #ccc;padding:6px;text-align:center}
+.memo th{background:#e9ecef}
+.memo td textarea{
+  width:100%;min-height:480px;resize:none;overflow:hidden;border:none;box-sizing:border-box;
+}
+.save-btn{display:block;width:100%;max-width:200px;margin:16px auto;padding:8px 0}
+#toast{position:fixed;left:50%;bottom:40px;transform:translateX(-50%);
+       background:#333;color:#fff;padding:8px 16px;border-radius:4px;font-size:.9rem;
+       opacity:0;pointer-events:none;transition:opacity .3s}
+#toast.show{opacity:1}
+
+/* ■ レスポンシブ対応 ■ */
+.page-wrapper {
+  width: 100%;
+  max-width: 100%;
+}
+
+.content-wrapper {
+  width: 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.main {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* タブレット・PC向けの調整 */
+@media (min-width: 768px) {
+  .content-wrapper {
+    padding: 0 40px;
+  }
+}
+
+/* 大画面での最大幅制限（オプション） */
+@media (min-width: 1400px) {
+  .main {
+    max-width: 1200px;
+  }
+}
+</style>
+</head>
+
+<body>
+<div id="header-placeholder"></div>
+<div class="page-wrapper">
+
+
+  <div class="content-wrapper">
+    <div class="main">
+
+      <button id="saveTop"  class="save-btn">保存</button>
+      <h2 class="head-i">４マスメモ</h2>
+      <a href="shoshiki-memo.html">書式メモ</a>
+
+      <form id="memoForm">
+        <table class="memo">
+          <thead><tr><th>項目 1</th><th>項目 2</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><textarea data-cell="0-0"></textarea></td>
+              <td><textarea data-cell="0-1"></textarea></td>
+            </tr>
+            <tr>
+              <td><textarea data-cell="1-0"></textarea></td>
+              <td><textarea data-cell="1-1"></textarea></td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+
+      <button id="saveBottom" class="save-btn">保存</button>
+      <button id="htmlBtn"  class="save-btn">HTMLで保存</button>
+      <button id="pdfBtn"   class="save-btn">PDF で保存</button>
+    </div><!-- /.main -->
+  </div><!-- /.content-wrapper -->
+</div><!-- /.page-wrapper -->
+
+<div id="toast">保存しました</div>
+
+<script>
+/* ---------- 保存／読込 ---------- */
+const form  = document.getElementById('memoForm');
+const toast = document.getElementById('toast');
+const lsKey = 'memo_2x2';
+
+function showToast(){
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'),2000);
+}
+
+function autoResizeTextarea(el){
+  el.style.height='auto';
+  el.style.height=el.scrollHeight+'px';
+}
+
+function loadMemo(){
+  const data = JSON.parse(localStorage.getItem(lsKey)||'{}');
+  form.querySelectorAll('textarea').forEach(ta=>{
+    ta.value = data[ta.dataset.cell] || '';
+    autoResizeTextarea(ta);        // 高さ合わせ
+  });
+}
+
+function saveMemo(){
+  const data={};
+  form.querySelectorAll('textarea').forEach(ta=>{
+    data[ta.dataset.cell]=ta.value;
+  });
+  localStorage.setItem(lsKey,JSON.stringify(data));
+  showToast();
+}
+
+document.getElementById('saveTop').onclick  =
+document.getElementById('saveBottom').onclick = e=>{
+  e.preventDefault();
+  saveMemo();
+};
+
+/* ---------- テキストエリア自動リサイズ ---------- */
+form.querySelectorAll('textarea').forEach(t=>{
+  autoResizeTextarea(t);
+  t.addEventListener('input',()=>autoResizeTextarea(t));
+});
+loadMemo();
+
+/* ---------- HTML 出力 ---------- */
+document.getElementById('htmlBtn').onclick=()=>{
+  saveMemo();
+  const vals=[...form.querySelectorAll('textarea')].map(t=>t.value.replace(/\n/g,'<br>'));
+  const html=`<!DOCTYPE html>
+  <html lang="ja"><head><meta charset="UTF-8"><title>4マスメモ - HTML出力</title>
+  <style>
+    body{font-family:sans-serif;padding:20px}
+    h1{font-size:20px;margin-bottom:20px}
+    table{border-collapse:collapse;width:100%;max-width:900px;margin-top:20px}
+    th,td{border:1px solid #999;padding:10px;font-size:14px;vertical-align:top}
+    th{background:#f2f2f2}
+  </style></head><body>
+  <h1>メモ</h1>
+  <table><thead><tr><th>項目 1</th><th>項目 2</th></tr></thead>
+  <tbody><tr><td>${vals[0]}</td><td>${vals[1]}</td></tr>
+         <tr><td>${vals[2]}</td><td>${vals[3]}</td></tr></tbody></table>
+  </body></html>`;
+
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`memo_2x2_${Date.now()}.html`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+/* ---------- PDF 出力（日本語対応） ---------- */
+document.getElementById('pdfBtn').onclick = async () => {
+  saveMemo();
+
+  /* ✅ legacy 版は window.jsPDF に載る */
+  const { jsPDF } = window;
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+
+  if (doc.getFontList()['NotoSansJP']) {
+    doc.setFont('NotoSansJP');
+  }
+
+  doc.setFontSize(16);
+  doc.text('４マスメモ', 40, 40);
+  doc.setFontSize(12);
+
+  const vals = [...form.querySelectorAll('textarea')].map(t =>
+    (t.value || '').replace(/\r\n|\r/g, '\n')
+  );
+  const body = [
+    [vals[0], vals[1]],
+    [vals[2], vals[3]]
+  ];
+
+  doc.autoTable({
+    head: [['項目 1', '項目 2']],
+    body,
+    startY: 60,
+    styles: { font: 'NotoSansJP', fontSize: 10, cellPadding: 8, valign: 'top' },
+    /* ✅ bold → normal に変更 */
+    headStyles: { fillColor: [240, 240, 240], fontStyle: 'normal', halign: 'center' },
+    columnStyles: { 0: { cellWidth: 250 }, 1: { cellWidth: 250 } },
+    margin: { left: 40, right: 40 },
+    tableWidth: 'wrap'
+  });
+
+  await doc.save(`memo_2x2_${Date.now()}.pdf`, { returnPromise: true });
+  showToast();
+};
+
+</script>
+
+
+</body>
+</html>
