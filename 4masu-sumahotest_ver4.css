@@ -1,8 +1,8 @@
 /* ■ 表（2×2）専用スタイル ●*/
 table.memo {
-  width: 800px
+  width: 800px;
   border-collapse: collapse;
-  margin: 0 0 24px 0; /* ← 左端に揃える */
+  margin: 0 0 24px 0;
 }
 .memo th,.memo td{border:1px solid #ccc;padding:6px;text-align:center}
 .memo th{background:#e9ecef}
