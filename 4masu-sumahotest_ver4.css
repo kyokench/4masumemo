@@ -40,8 +40,15 @@ table.memo{
 
 .header-flex {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+}
+
+.title-and-menu {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* ☰とタイトルの間隔 */
 }
 
 .hamburger-menu {
@@ -54,8 +61,8 @@ table.memo{
 .menu-list {
   display: none;
   position: absolute;
-  right: 0;
   top: 30px;
+  left: 0;
   background: white;
   border: 1px solid #ccc;
   list-style: none;
@@ -79,6 +86,7 @@ table.memo{
 .hamburger-menu.open .menu-list {
   display: block;
 }
+
 
 /* タブレット・PC向けの調整 */
 @media (min-width: 768px) {

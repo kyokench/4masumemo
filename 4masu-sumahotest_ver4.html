@@ -20,22 +20,24 @@
   <div class="content-wrapper">
     <div class="main">
 
- <div class="header-flex">
-  <h2 class="head-i">４マスメモ</h2>
-  <div class="hamburger-menu">
-    ☰
-    <ul class="menu-list">
-      <li onclick="copyCell('0-0')">左上をコピー</li>
-      <li onclick="copyCell('0-1')">右上をコピー</li>
-      <li onclick="copyCell('1-0')">左下をコピー</li>
-      <li onclick="copyCell('1-1')">右下をコピー</li>
-      <li onclick="clearCell('0-0')">左上を削除</li>
-      <li onclick="clearCell('0-1')">右上を削除</li>
-      <li onclick="clearCell('1-0')">左下を削除</li>
-      <li onclick="clearCell('1-1')">右下を削除</li>
-    </ul>
+  <div class="header-flex">
+    <div class="title-and-menu">
+      <div class="hamburger-menu">
+        ☰
+        <ul class="menu-list">
+          <li onclick="copyCell('0-0')">左上をコピー</li>
+          <li onclick="copyCell('0-1')">右上をコピー</li>
+          <li onclick="copyCell('1-0')">左下をコピー</li>
+          <li onclick="copyCell('1-1')">右下をコピー</li>
+          <li onclick="clearCell('0-0')">左上を削除</li>
+          <li onclick="clearCell('0-1')">右上を削除</li>
+          <li onclick="clearCell('1-0')">左下を削除</li>
+          <li onclick="clearCell('1-1')">右下を削除</li>
+        </ul>
+      </div>
+      <h2 class="head-i">４マスメモ</h2>
+    </div>
   </div>
-</div>
 
 
       <button id="saveTop"  class="save-btn">保存</button>
@@ -212,8 +214,6 @@ th{background:#f2f2f2}
     if (ta) {
       ta.value = '';
       autoResizeTextarea(ta);
-      saveMemo();
-      showToast();
     }
   }
   
