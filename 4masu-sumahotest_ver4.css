@@ -1,0 +1,95 @@
+/* ■ 表（2×2）専用スタイル ●*/
+table.memo{
+  width:800px;border-collapse:collapse;margin:24px;
+}
+.memo th,.memo td{border:1px solid #ccc;padding:6px;text-align:center}
+.memo th{background:#e9ecef}
+.memo td textarea{
+  width:100%;min-height:480px;resize:none;overflow:hidden;border:none;box-sizing:border-box;
+}
+
+.memo th, .memo td {
+  border:1px solid #ccc;
+  padding:6px;
+  text-align:center;
+  vertical-align: top; /* ← これが必須 */
+}
+
+.save-btn{display:block;width:200px;margin:25px;padding:8px 0}
+#toast{position:fixed;left:50%;bottom:40px;transform:translateX(-50%);
+       background:#333;color:#fff;padding:8px 16px;border-radius:4px;font-size:.9rem;
+       opacity:0;pointer-events:none;transition:opacity .3s}
+#toast.show{opacity:1}
+
+/* ■ レスポンシブ対応 ■ */
+.page-wrapper {
+  width: 100%;
+}
+
+.content-wrapper {
+  width: 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.main {
+  width: 800px
+  max-width: 100%;
+
+}
+
+.header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hamburger-menu {
+  position: relative;
+  font-size: 24px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.menu-list {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 30px;
+  background: white;
+  border: 1px solid #ccc;
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+  width: 180px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  z-index: 999;
+}
+
+.menu-list li {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.menu-list li:hover {
+  background-color: #f2f2f2;
+}
+
+.hamburger-menu.open .menu-list {
+  display: block;
+}
+
+/* タブレット・PC向けの調整 */
+@media (min-width: 768px) {
+  .content-wrapper {
+    padding: 0 40px;
+  }
+}
+
+/* 大画面での最大幅制限（オプション） */
+@media (min-width: 1400px) {
+  .main {
+    max-width: 1200px;
+  }
+}
