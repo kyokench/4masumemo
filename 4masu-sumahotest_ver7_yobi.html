@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>４マスメモ - 予備版</title>
+<title>４マスメモ（予備）</title>
 <link rel="stylesheet" href="https://kyokench.github.io/4masumemo/4masu-sumahotest_ver4.css">
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.28/dist/jspdf.plugin.autotable.min.js"></script>
@@ -72,7 +72,7 @@
       await setDoc(ref, data);
       
       console.log("Firestoreへの保存完了 (予備版)");
-      showToast("予備版として保存しました");
+      showToast("保存しました");
     } catch (error) {
       console.error("保存エラー:", error);
       alert("保存に失敗しました: " + error.message);
@@ -105,7 +105,7 @@
       currentUser = user;
       await loadMemoFromFirestore();
       document.getElementById("user-info").innerHTML =
-        `こんにちは、${user.displayName} さん（予備版） <button onclick="signOutUser()">ログアウト</button>`;
+        `こんにちは、${user.displayName} さん <button onclick="signOutUser()">ログアウト</button>`;
     } else {
       currentUser = null;
       document.getElementById("user-info").innerHTML =
@@ -191,7 +191,7 @@
         </table>
       </form>
 
-      <button id="saveBottom" class="save-btn">予備として保存</button>
+      <button id="saveBottom" class="save-btn">保存</button>
       <button id="htmlBtn" class="save-btn">HTMLで保存</button>
       <button id="pdfBtn" class="save-btn">PDF で保存</button>
     </div>
