@@ -71,6 +71,12 @@
 
   // ✅ 匿名ログイン開始
   signInAnonymously(auth).catch(console.error);
+  // 保存ボタンにFirestore保存機能を紐付け
+  document.getElementById('saveTop').onclick =
+  document.getElementById('saveBottom').onclick = e => {
+    e.preventDefault();
+    saveMemoToFirestore();
+  };
 
 </script>
 
