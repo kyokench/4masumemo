@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>４マスメモ</title>
+  <link rel="stylesheet" href="https://kyokench.github.io/4masumemo/4masu-sumahotest_ver4.css">
+  <!-- ✅ 必要なライブラリ（UMD形式） -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.28/dist/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://kyokench.github.io/4masumemo/NotoSansJP-Regular-base64_2.js"></script>
+
+</head>
+
+<!-- Firebase SDK -->
+<script type="module">
+  // ✅ Firebase SDKのインポート
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  // ✅ あなたのFirebase構成に書き換えてください
+  const firebaseConfig = {
+    apiKey: "AIzaSyDuNluIfeulzr_hCr7bHtnCxE1cBneB4kM",
+    authDomain: "masu-memo.firebaseapp.com",
+    projectId: "masu-memo",
+    storageBucket: "masu-memo.firebasestorage.app",
+    messagingSenderId: "1065347011702",
+    appId: "1:1065347011702:web:e417d565f28d000da83b57"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth();
+  const db = getFirestore();
+
+  let currentUser = null;
+
+  async function saveMemoToFirestore() {
+    const data = {};
+    document.querySelectorAll('textarea').forEach(ta => {
+      data[ta.dataset.cell] = ta.value;
+    });
+    if (currentUser) {
+      const ref = doc(db, "users", currentUser.uid, "memo", "4masu");
+      await setDoc(ref, data);
+      showToast();
+    }
+  }
+
+  async function loadMemoFromFirestore() {
+    if (!currentUser) return;
+    const ref = doc(db, "users", currentUser.uid, "memo", "4masu");
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      const data = snap.data();
+      document.querySelectorAll('textarea').forEach(ta => {
+        ta.value = data[ta.dataset.cell] || '';
+        autoResizeTextarea(ta);
+      });
+    }
+  }
+
+  // ✅ 認証完了後に自動でロード・保存機能に切り替え
+  onAuthStateChanged(auth, async user => {
+    if (user) {
+      currentUser = user;
+      await loadMemoFromFirestore();
+      console.log("ログイン済みユーザー:", user.uid);
+    }
+  });
+
+  // ✅ 匿名ログイン開始
+  signInAnonymously(auth).catch(console.error);
+
+</script>
+
+
+<body>
+<div id="header-placeholder"></div>
+<div class="page-wrapper">
+
+
+  <div class="content-wrapper">
+    <div class="main">
+
+  <div class="header-flex">
+    <div class="title-and-menu">
+      <div class="hamburger-menu">
+        ☰
+        <ul class="menu-list">
+          <li onclick="copyCell('0-0')">1.左上をコピー</li>
+          <li onclick="copyCell('0-1')">2.右上をコピー</li>
+          <li onclick="copyCell('1-0')">3.左下をコピー</li>
+          <li onclick="copyCell('1-1')">4.右下をコピー</li>
+          <li onclick="clearCell('0-0')">5.左上を削除</li>
+          <li onclick="clearCell('0-1')">6.右上を削除</li>
+          <li onclick="clearCell('1-0')">7.左下を削除</li>
+          <li onclick="clearCell('1-1')">8.右下を削除</li>
+        </ul>
+      </div>
+      <h2 class="head-i">４マスメモ</h2>
+    </div>
+  </div>
+
+
+      <button id="saveTop"  class="save-btn">保存</button>
+
+      <form id="memoForm">
+        <table class="memo">
+          <thead><tr><th>項目 1</th><th>項目 2</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><textarea data-cell="0-0"></textarea></td>
+              <td><textarea data-cell="0-1"></textarea></td>
+            </tr>
+            <tr>
+              <td><textarea data-cell="1-0"></textarea></td>
+              <td><textarea data-cell="1-1"></textarea></td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+
+      <button id="saveBottom" class="save-btn">保存</button>
+      <button id="htmlBtn"  class="save-btn">HTMLで保存</button>
+      <button id="pdfBtn"   class="save-btn">PDF で保存</button>
+    </div><!-- /.main -->
+  </div><!-- /.content-wrapper -->
+</div><!-- /.page-wrapper -->
+
+<div id="toast">保存しました</div>
+
+<script>
+  const form = document.getElementById('memoForm');
+  const toast = document.getElementById('toast');
+  const lsKey = 'memo_2x2';
+
+  function showToast(){
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+
+  function autoResizeTextarea(el){
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
+
+  form.querySelectorAll('textarea').forEach(t => {
+    autoResizeTextarea(t);
+    t.addEventListener('input', () => autoResizeTextarea(t));
+  });
+
+  document.getElementById('htmlBtn').onclick = () => {const vals = [...form.querySelectorAll('textarea')].map(t => t.value.replace(/\n/g, '<br>'));
+    const html = `<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><title>4マスメモ - HTML出力</title>
+<style>
+body{font-family:sans-serif;padding:20px}
+h1{font-size:20px;margin-bottom:20px}
+table{border-collapse:collapse;width:100%;max-width:900px;margin-top:20px;table-layout:fixed}
+th,td{border:1px solid #999;padding:10px;font-size:14px;vertical-align:top;width:50%;word-wrap:break-word}
+th{background:#f2f2f2}
+</style></head><body>
+<h1>メモ</h1>
+<table><thead><tr><th>項目 1</th><th>項目 2</th></tr></thead>
+<tbody><tr><td>${vals[0]}</td><td>${vals[1]}</td></tr>
+<tr><td>${vals[2]}</td><td>${vals[3]}</td></tr></tbody></table></body></html>`;
+
+    const blob = new Blob([html], {type: 'text/html;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `memo_2x2_${Date.now()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  document.getElementById('pdfBtn').onclick = () => {
+    console.log("PDFボタンクリック処理：開始");const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+
+    doc.addFileToVFS("NotoSansJP-Regular.ttf", window.NotoSansJP_Base64);
+    doc.addFont("NotoSansJP-Regular.ttf", "NotoSansJP", "normal");
+    doc.setFont("NotoSansJP");
+
+    doc.setFontSize(16);
+    doc.text('メモ', 40, 40);
+
+    const vals = [...document.querySelectorAll('textarea')].map(t =>
+      (t.value || '').replace(/\r\n|\r/g, '\n')
+    );
+    const body = [
+      [vals[0], vals[1]],
+      [vals[2], vals[3]]
+    ];
+
+    doc.autoTable({
+      head: [['項目 1', '項目 2']],
+      body,
+      startY: 60,
+      styles: {
+        font: "NotoSansJP",
+        fontSize: 10,
+        cellPadding: 8,
+        valign: 'top'
+      },
+      headStyles: {
+        fillColor: [100, 100, 100],
+        fontStyle: 'normal',
+        halign: 'center'
+      },
+      columnStyles: {
+        0: { cellWidth: doc.internal.pageSize.getWidth() / 2 - 40 },
+        1: { cellWidth: doc.internal.pageSize.getWidth() / 2 - 40 }
+      },
+      margin: { left: 40, right: 40 }
+    });
+
+    doc.save(`memo_2x2_${Date.now()}.pdf`);
+    showToast();
+  };
+
+  // ハンバーガー開閉
+  document.querySelector('.hamburger-menu').addEventListener('click', function (e) {
+    e.stopPropagation(); // 外側のクリックと干渉しないように
+    this.classList.toggle('open');
+  });
+
+  // 他の場所をクリックしたら閉じる
+  document.addEventListener('click', function () {
+    document.querySelector('.hamburger-menu').classList.remove('open');
+  });
+
+  // コピー処理
+  function copyCell(cellId) {
+    const ta = document.querySelector(`textarea[data-cell="${cellId}"]`);
+    if (ta) {
+      navigator.clipboard.writeText(ta.value).then(() => {
+        showToast();
+      });
+    }
+  }
+
+  // 削除処理
+  function clearCell(cellId) {
+    const ta = document.querySelector(`textarea[data-cell="${cellId}"]`);
+    if (ta) {
+      ta.value = '';
+      autoResizeTextarea(ta);
+    }
+  }
+  
+</script>
+
+
+</body>
+</html>
