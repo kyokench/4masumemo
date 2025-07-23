@@ -218,9 +218,13 @@ body{
   transition: background-color var(--transition-fast);
 }
 
+/* --------------------------------------------------------------------------
+封印中
+
 .memo td textarea:focus {
   background-color: rgba(0, 123, 255, 0.05);
 }
+-------------------------------------------------------------------------- */
 
 .memo td textarea::placeholder {
   color: var(--color-text-light);
