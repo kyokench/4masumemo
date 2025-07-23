@@ -88,7 +88,7 @@
     if (!currentUser) return;
     
     try {
-      const ref = doc(db, "users", currentUser.uid, "memo", "4masu");
+      const ref = doc(db, "users", currentUser.uid, "memo", "4masu_yobi");
       const snap = await getDoc(ref);
       if (snap.exists()) {
         const data = snap.data();
