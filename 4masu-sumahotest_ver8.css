@@ -1,0 +1,470 @@
+/* ==========================================================================
+   ４マスメモアプリケーション スタイルシート
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   CSS カスタムプロパティ（CSS変数）
+   -------------------------------------------------------------------------- */
+:root {
+  /* カラーパレット */
+  --color-primary: #007bff;
+  --color-success: #28a745;
+  --color-border: #ccc;
+  --color-border-light: #e9ecef;
+  --color-background: #ffffff;
+  --color-background-alt: #f8f9fa;
+  --color-text: #333333;
+  --color-text-light: #6c757d;
+  --color-shadow: rgba(0, 0, 0, 0.1);
+  --color-shadow-dark: rgba(0, 0, 0, 0.2);
+  
+  /* レイアウト */
+  --container-width-normal: 800px;
+  --container-width-wide: 1200px;
+  --container-padding: 20px;
+  --container-padding-large: 40px;
+  
+  /* スペーシング */
+  --spacing-xs: 6px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-xxl: 24px;
+  --spacing-xxxl: 40px;
+  
+  /* フォント */
+  --font-size-sm: 0.9rem;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-xxl: 24px;
+  
+  /* その他 */
+  --border-radius: 4px;
+  --border-radius-lg: 8px;
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --textarea-min-height: 480px;
+  --button-width: 200px;
+  --toast-bottom: 40px;
+  --menu-width: 240px;
+  --menu-z-index: 999;
+}
+
+/* --------------------------------------------------------------------------
+   基本リセット・ベーススタイル
+   -------------------------------------------------------------------------- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--color-text);
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-background);
+}
+
+/* --------------------------------------------------------------------------
+   レイアウト・コンテナ
+   -------------------------------------------------------------------------- */
+.page-wrapper {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.content-wrapper {
+  width: 100%;
+  padding: 0 var(--container-padding);
+  display: flex;
+  justify-content: flex-start;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  max-width: var(--container-width-normal);
+  margin: 0;
+  padding: var(--spacing-xl) 0;
+}
+
+/* --------------------------------------------------------------------------
+   ヘッダー・ナビゲーション
+   -------------------------------------------------------------------------- */
+.header-flex {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: var(--spacing-xl);
+  width: 100%;
+}
+
+.title-and-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.head-i {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* --------------------------------------------------------------------------
+   ハンバーガーメニュー
+   -------------------------------------------------------------------------- */
+.hamburger-menu {
+  position: relative;
+  font-size: var(--font-size-xxl);
+  cursor: pointer;
+  user-select: none;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius);
+  transition: background-color var(--transition-fast);
+}
+
+.hamburger-menu:hover {
+  background-color: var(--color-background-alt);
+}
+
+.menu-list {
+  display: none;
+  position: absolute;
+  top: calc(100% + var(--spacing-sm));
+  left: 0;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  list-style: none;
+  padding: var(--spacing-sm) 0;
+  margin: 0;
+  min-width: var(--menu-width);
+  box-shadow: 0 4px 12px var(--color-shadow-dark);
+  z-index: var(--menu-z-index);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity var(--transition-normal), transform var(--transition-normal);
+}
+
+.hamburger-menu.open .menu-list {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.menu-list li {
+  padding: var(--spacing-md) var(--spacing-lg);
+  cursor: pointer;
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  transition: background-color var(--transition-fast);
+  border-radius: 0;
+}
+
+.menu-list li:first-child {
+  border-top-left-radius: var(--border-radius-lg);
+  border-top-right-radius: var(--border-radius-lg);
+}
+
+.menu-list li:last-child {
+  border-bottom-left-radius: var(--border-radius-lg);
+  border-bottom-right-radius: var(--border-radius-lg);
+}
+
+.menu-list li:hover {
+  background-color: var(--color-background-alt);
+}
+
+/* --------------------------------------------------------------------------
+   メモテーブル
+   -------------------------------------------------------------------------- */
+.memo {
+  width: 100%;
+  max-width: var(--container-width-normal);
+  border-collapse: collapse;
+  margin: 0 0 var(--spacing-xxl) 0;
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 2px 8px var(--color-shadow);
+  background: var(--color-background);
+}
+
+/* 横幅バリエーション */
+.memo.wide {
+  max-width: var(--container-width-wide);
+}
+
+.memo.normal {
+  max-width: var(--container-width-normal);
+}
+
+.memo th,
+.memo td {
+  border: 1px solid var(--color-border);
+  padding: var(--spacing-xs);
+  text-align: center;
+  vertical-align: top;
+}
+
+.memo th {
+  background: var(--color-border-light);
+  font-weight: 600;
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  padding: var(--spacing-md);
+}
+
+.memo td {
+  padding: 0;
+  position: relative;
+}
+
+.memo td textarea {
+  width: 100%;
+  min-height: var(--textarea-min-height);
+  resize: none;
+  overflow: hidden;
+  border: none;
+  padding: var(--spacing-md);
+  font-size: var(--font-size-md);
+  font-family: inherit;
+  line-height: 1.5;
+  background: transparent;
+  color: var(--color-text);
+  outline: none;
+  transition: background-color var(--transition-fast);
+}
+
+.memo td textarea:focus {
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+.memo td textarea::placeholder {
+  color: var(--color-text-light);
+  opacity: 0.7;
+}
+
+/* --------------------------------------------------------------------------
+   ボタン
+   -------------------------------------------------------------------------- */
+.save-btn {
+  display: inline-block;
+  width: var(--button-width);
+  margin: var(--spacing-xl) 0;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+}
+
+.save-btn:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px var(--color-shadow);
+}
+
+.save-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px var(--color-shadow);
+}
+
+.save-btn:focus {
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   トースト通知
+   -------------------------------------------------------------------------- */
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: var(--toast-bottom);
+  transform: translateX(-50%);
+  background: var(--color-text);
+  color: white;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--border-radius-lg);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal), transform var(--transition-normal);
+  z-index: calc(var(--menu-z-index) + 1);
+  white-space: nowrap;
+  box-shadow: 0 4px 12px var(--color-shadow-dark);
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-8px);
+}
+
+/* --------------------------------------------------------------------------
+   ユーザー情報エリア
+   -------------------------------------------------------------------------- */
+#user-info {
+  margin: var(--spacing-md) 0;
+  padding: var(--spacing-md);
+  background: var(--color-background-alt);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--color-border-light);
+  font-size: var(--font-size-md);
+  width: 100%;
+}
+
+#user-info button {
+  margin-left: var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+#user-info button:hover {
+  background: #0056b3;
+}
+
+/* --------------------------------------------------------------------------
+   レスポンシブデザイン
+   -------------------------------------------------------------------------- */
+
+/* スマートフォン（縦向き） */
+@media screen and (max-width: 480px) {
+  :root {
+    --container-padding: 16px;
+    --textarea-min-height: 320px;
+    --button-width: 100%;
+    --menu-width: 200px;
+  }
+  
+  .memo td textarea {
+    font-size: 16px; /* iOS Safariでのズーム防止 */
+  }
+  
+  .main {
+    max-width: 100%;
+  }
+  
+  .menu-list {
+    min-width: var(--menu-width);
+    right: 0;
+    left: auto;
+  }
+  
+  .save-btn {
+    width: 100%;
+  }
+}
+
+/* タブレット */
+@media screen and (min-width: 481px) and (max-width: 1023px) {
+  :root {
+    --container-padding: 32px;
+    --textarea-min-height: 400px;
+  }
+}
+
+/* デスクトップ */
+@media screen and (min-width: 1024px) {
+  :root {
+    --container-padding: var(--container-padding-large);
+  }
+  
+  .content-wrapper {
+    justify-content: center;
+  }
+  
+  .main {
+    max-width: var(--container-width-normal);
+  }
+  
+  .main.wide-layout {
+    max-width: var(--container-width-wide);
+  }
+}
+
+/* 大画面ディスプレイ */
+@media screen and (min-width: 1400px) {
+  .main {
+    max-width: var(--container-width-wide);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   プリント用スタイル
+   -------------------------------------------------------------------------- */
+@media print {
+  .hamburger-menu,
+  .save-btn,
+  #toast,
+  #user-info {
+    display: none !important;
+  }
+  
+  .memo {
+    box-shadow: none;
+    border: 2px solid var(--color-border);
+  }
+  
+  .memo td textarea {
+    min-height: auto;
+    height: auto;
+    background: transparent !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   アクセシビリティ向上
+   -------------------------------------------------------------------------- */
+
+/* キーボードナビゲーション時のフォーカス表示を改善 */
+*:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* 動きを減らしたい場合の設定に対応 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ダークモード対応（基本的な設定） */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #1a1a1a;
+    --color-background-alt: #2d2d2d;
+    --color-text: #ffffff;
+    --color-text-light: #b0b0b0;
+    --color-border: #404040;
+    --color-border-light: #505050;
+    --color-shadow: rgba(0, 0, 0, 0.3);
+    --color-shadow-dark: rgba(0, 0, 0, 0.5);
+  }
+  
+  .memo td textarea:focus {
+    background-color: rgba(0, 123, 255, 0.1);
+  }
+}
